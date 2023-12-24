@@ -22,15 +22,6 @@ export function readInputLines(name) {
   return fs.readFileSync(path.join(dir, "input", name + ".txt"), "utf-8");
 }
 
-// 1abc2
-// pqr3stu8vwx
-// a1b2c3d4e5f
-// treb7uchet
-
-// In this example, the calibration values of these four lines are 12, 38, 15, and 77. Adding these together produces 142.
-
-// Consider your entire calibration document. What is the sum of all of the calibration values?
-
 /** @param {string} text */
 
 function isDigit(char) {
@@ -46,29 +37,30 @@ function count(text) {
   const textArr = text.split("\n").filter((element) => element !== "");
 
   /** @var {string[]} digitNestedArray */
-  const digitNestedArray = textArr.map((element) => {
-    const elementArrx = Object.entries(wordNumber).forEach(([key, value]) => {
-      const newElement = element;
-      if (element.includes(key)) {
-        newElement.replaceAll(key, value);
-      }
 
-      console.log(element.includes(key), element);
-      return newElement;
+  const digitNestedArray = textArr.map((line) => {
+    const lineArr = [];
+    const elementArr = line.split("");
+
+    for (let i = 0; i < line.length; i++) {
+      Object.entries(wordNumber).forEach(([key, value]) => {
+        const index = line.indexOf(key, i);
+
+        if (index != -1) {
+          lineArr.push({ value: String(value), index });
+        }
+      });
+    }
+
+    elementArr.forEach((char, index) => {
+      if (isDigit(char) && char !== "0") {
+        lineArr.push({ value: char, index: index });
+      }
     });
 
-    const elementArr = element.split("");
+    lineArr.sort((a, b) => a.index - b.index);
 
-    // replaceAll(elementArr, wordNumber);
-
-    const result = [];
-    elementArr.forEach((char) => {
-      if (isDigit(char)) {
-        result.push(char);
-      }
-    });
-
-    return result;
+    return lineArr.map((element) => element.value);
   });
 
   const result = digitNestedArray.reduce((acc, element) => {
@@ -80,10 +72,8 @@ function count(text) {
   return result;
 }
 
-// count(readInputLines("01"));
-// count(readInputLines("011"));
-
-// count(" 1abc2\npqr3stu8vwx\na1b2c3d4e5f\ntreb7uchet");
 count(
   "two1nine\neightwothree\nabcone2threexyz\nxtwone3four\n4nineeightseven2\nzoneight234\n7pqrstsixteen"
 );
+
+count(readInputLines("01"));
