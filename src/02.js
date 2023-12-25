@@ -10,7 +10,7 @@ export function readInputLines(name) {
   return fs.readFileSync(path.join(dir, "input", name + ".txt"), "utf-8");
 }
 
-function countGameIndex(input) {
+function count1(input) {
   const ballsInBag = {
     red: 12,
     green: 13,
@@ -61,13 +61,68 @@ function countGameIndex(input) {
     }
   });
 
+  console.log("part one: ", result);
+
+  return result;
+}
+
+// count1(
+//   "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\nGame 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\nGame 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\nGame 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\nGame 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
+// );
+
+// count1(readInputLines("02"));
+
+function count2(input) {
+  const colors = ["red", "blue", "green"];
+  const games = input.split("\n").filter((element) => element !== "");
+
+  let result = 0;
+
+  for (const game of games) {
+    const pickedGameBalls = {};
+    const [_title, rounds] = game.split(":");
+
+    const roundArray = rounds.split(";").map((roundItem) => roundItem.trim());
+
+    for (const round of roundArray) {
+      const roundItemArray = round.split(",").map((item) => item.trim());
+
+      for (const item of roundItemArray) {
+        const [numberOfBalls, colorOfBalls] = item.split(" ");
+        if (
+          colorOfBalls === "red" ||
+          colorOfBalls === "blue" ||
+          colorOfBalls === "green"
+        ) {
+          if (!pickedGameBalls[colorOfBalls]) {
+            pickedGameBalls[colorOfBalls] = [+numberOfBalls];
+          } else {
+            pickedGameBalls[colorOfBalls].push(+numberOfBalls);
+          }
+        }
+      }
+    }
+
+    for (const color of colors) {
+      pickedGameBalls[color].sort((a, b) => b - a);
+    }
+
+    let colorsMultiplied = 1;
+
+    for (const color of colors) {
+      colorsMultiplied *= pickedGameBalls[color].at(0);
+    }
+
+    result += colorsMultiplied;
+  }
+
   console.log(result);
 
   return result;
 }
 
-countGameIndex(
+count2(
   "Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green\nGame 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue\nGame 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red\nGame 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red\nGame 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green"
 );
 
-countGameIndex(readInputLines("02"));
+count2(readInputLines("02"));
